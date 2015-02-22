@@ -28,12 +28,12 @@ int main(int argc, char **argv) {
     // initialize space for message in memory
     double *send = (double *)malloc(packet_size * sizeof(double));
     if (myid == send_id) {
-      // build blank message
+      // build message
       int j;
       for (j = 1; j < packet_size; j++) {
         send[j] = 0.0;
       }
-      // run "runs" bandwidth tests
+      // run bandwidth tests
       for (i = 0; i < runs; i++) {
         // initialize start time for each message
         send[0] = MPI_Wtime();
@@ -52,6 +52,7 @@ int main(int argc, char **argv) {
         double bw = (sizeof(double) * packet_size) / diff;
         // printf("start time: %.11f, endtime: %.11f, diff: %.11f \n", send[0], end, diff);
         total_bw += bw;
+        // printf("total_bw: %.11f, bw: %.11f \n", total_bw, bw);
         ack = 1;
         MPI_Send(&ack, 1, MPI_INT, send_id, tag, MPI_COMM_WORLD);
       }
