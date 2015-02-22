@@ -48,11 +48,9 @@ int main(int argc, char **argv) {
         MPI_Recv(send, packet_size, MPI_DOUBLE, send_id, tag, MPI_COMM_WORLD, &status);
         double end = MPI_Wtime();
         // calculate receive time
-        double diff = end - send[0];
-        double bw = (sizeof(double) * packet_size) / diff;
-        // printf("start time: %.11f, endtime: %.11f, diff: %.11f \n", send[0], end, diff);
+        double bw = (sizeof(double) * packet_size) / (end - send[0]);
         total_bw += bw;
-        // printf("total_bw: %.11f, bw: %.11f \n", total_bw, bw);
+
         ack = 1;
         MPI_Send(&ack, 1, MPI_INT, send_id, tag, MPI_COMM_WORLD);
       }

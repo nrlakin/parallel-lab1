@@ -2,8 +2,8 @@
 #include <mpi.h>
 
 int main(int argc, char **argv) {
-  int sz, myid, ack, i;
-  double send;
+  int sz, myid, i;
+  char send;
   double total_lat = 0;
   int send_id = 0, rec_id = 1, tag = 1, packet_size = 1;
   // number of latency runs
@@ -25,27 +25,22 @@ int main(int argc, char **argv) {
   for (i = 0; i < runs; i++) {
     if (myid == send_id) {
       // sender sends start time
-      send = MPI_Wtime();
-      MPI_Send(&send, packet_size, MPI_DOUBLE, rec_id, tag, MPI_COMM_WORLD);
-
-      // wait for ack
-      MPI_Recv(&ack, 1, MPI_INT, rec_id, tag, MPI_COMM_WORLD, &status);
+      send = 'a';
+      double start = MPI_Wtime();
+      MPI_Send(&send, packet_size, MPI_CHAR, rec_id, tag, MPI_COMM_WORLD);
+      double end;
+      // wait for receive time
+      MPI_Recv(&end, packet_size, MPI_DOUBLE, rec_id, tag, MPI_COMM_WORLD, &status);
+      // calculate latency (seconds per byte)
+      double lat = (end-start)/sizeof(char);
+      total_lat += lat;
     } else if (myid == rec_id) {
       // receive start time
-      MPI_Recv(&send, packet_size, MPI_DOUBLE, send_id, tag, MPI_COMM_WORLD, &status);
+      MPI_Recv(&send, packet_size, MPI_CHAR, send_id, tag, MPI_COMM_WORLD, &status);
       // record end time
       double receive = MPI_Wtime();
-      // calculate latency (seconds per byte)
-      double lat = (receive-send)/sizeof(send);
-      total_lat += lat;
-      // printf("one-way trip - Start Time: %.11f, End Time: %.11f \n",
-      //   send, receive);
-      // printf("one-way trip - Time Elapsed: %.11f, Latency: %.11f \n",
-      //   receive-send, lat);
-
-      // send ack to block before next run
-      ack = 1;
-      MPI_Send(&ack, 1, MPI_INT, send_id, tag, MPI_COMM_WORLD);
+      // send receive time to block before next run
+      MPI_Send(&receive, packet_size, MPI_DOUBLE, send_id, tag, MPI_COMM_WORLD);
     }
   }
 
