@@ -56,10 +56,13 @@ int main(int argc, char **argv) {
     start = MPI_Wtime();
   // Chop up vector and send chunks to processes (0 only).
     chunk_size = VectorLength / n_proc;
+    printf("chunk: %d\n", chunk_size);
 
     for (i = 1; i < n_proc; i++) {
       msg_len = chunk_size;
       if (i == n_proc-1) {
+        int rem = VectorLength % n_proc;
+        printf("remainder: %d\n", rem);
         msg_len += VectorLength % n_proc;
       }
       MPI_Send(&vector[i*chunk_size], msg_len, MPI_DOUBLE,
