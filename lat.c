@@ -7,7 +7,7 @@ int main(int argc, char **argv) {
   double total_lat = 0;
   int send_id = 0, rec_id = 1, tag = 1, packet_size = 1;
   // number of latency runs
-  int runs = 100;
+  int runs = 10000;
 
   // initialize mpi
   MPI_Status status;
