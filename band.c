@@ -7,8 +7,8 @@ int main(int argc, char **argv) {
   int send_id = 0, rec_id = 1, tag = 1;
 
   // granularity of messages/sizes to send
-  int packet_step = 10000;
-  int max_size = 10000000;
+  int packet_step = 25000;
+  int max_size = 3500000;
   int runs = 5;
 
   // init mpi
