@@ -91,6 +91,7 @@ int main(int argc, char **argv) {
   } else {
     MPI_Probe(0, tag, MPI_COMM_WORLD, &status);
     MPI_Get_count(&status, MPI_DOUBLE, &msg_len);
+    printf("Process %d received vector of len %d.\n", rank, msg_len);
     if (NULL == (vector = (double*) malloc(sizeof(double) * msg_len))) {
       printf("malloc failed on process %d...", rank);
     };
