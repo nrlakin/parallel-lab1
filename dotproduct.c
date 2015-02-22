@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
         printf("remainder: %d\n", rem);
         msg_len += VectorLength % n_proc;
       }
-      printf("outgoing message len: %d", msg_len);
+      printf("outgoing message len: %d\n", msg_len);
       MPI_Send(&vector[i*chunk_size], msg_len, MPI_DOUBLE,
             i, tag, MPI_COMM_WORLD);
       //printf("Process %d sent %d entries to Process %d.\n", rank, msg_len, i);
