@@ -71,6 +71,7 @@ int main(int argc, char **argv) {
   // Calc dot product of subvector and send result
   if (rank == 0) {
     double sub_result;
+    long ops;
     //printf("Process %d processing %d entries...\n", rank, chunk_size);
     result = norm(vector, chunk_size);
     //printf("Process %d got %f.\n", rank, result);
@@ -81,10 +82,11 @@ int main(int argc, char **argv) {
       //printf("Got %f from Process %d.\n", sub_result, i);
     }
     end = MPI_Wtime();
+    ops = ((long)VectorLength) * 2;
     printf("Dot product = %f\n", result);
     printf("%f seconds elapsed.\n", end-start);
-    printf("%d operations completed.\n", 2*VectorLength);
-    printf("%e seconds/operation.\n", (end-start)/((float)(2*VectorLength)));
+    printf("%ld operations completed.\n", ops);
+    printf("%e seconds/operation.\n", (end-start)/((double)ops));
 
   } else {
     MPI_Probe(0, tag, MPI_COMM_WORLD, &status);
