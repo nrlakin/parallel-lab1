@@ -4,7 +4,7 @@
 #include <time.h>
 
 // Must be less than max int!
-#define VECTOR_LENGTH 1000000000
+#define VECTOR_LENGTH 2000000000
 //#define VECTOR_LENGTH 5
 
 double norm(double* vec, int len) {
