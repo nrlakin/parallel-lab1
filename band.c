@@ -3,8 +3,9 @@
 #include <mpi.h>
 
 int main(int argc, char **argv) {
-  int sz, myid, packet_size, ack, i;
+  int sz, myid, packet_size, i;
   int send_id = 0, rec_id = 1, tag = 1;
+  double ack;
 
   // granularity of messages/sizes to send
   int packet_step = 25000;
@@ -39,7 +40,7 @@ int main(int argc, char **argv) {
         send[0] = MPI_Wtime();
         MPI_Send(send, packet_size, MPI_DOUBLE, rec_id, tag, MPI_COMM_WORLD);
         // wait for ack to proceed
-        MPI_Recv(&ack, 1, MPI_INT, rec_id, tag, MPI_COMM_WORLD, &status);
+        MPI_Recv(&ack, 1, MPI_DOUBLE, rec_id, tag, MPI_COMM_WORLD, &status);
       }
       free(send);
     } else if (myid == rec_id) {
@@ -51,8 +52,7 @@ int main(int argc, char **argv) {
         double bw = (sizeof(double) * packet_size) / (end - send[0]);
         total_bw += bw;
 
-        ack = 1;
-        MPI_Send(&ack, 1, MPI_INT, send_id, tag, MPI_COMM_WORLD);
+        MPI_Send(&end, 1, MPI_DOUBLE, send_id, tag, MPI_COMM_WORLD);
       }
       // calculate average bandwidth
       printf("Runs: %i, Packet Size: %.11i, Bandwidth: %.11f \n",
