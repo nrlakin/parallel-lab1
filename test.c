@@ -27,5 +27,12 @@ int main(int argc, char** argv) {
     result = norm(x, VECTOR_LENGTH);
     printf("L2 norm = %f\n", result);
 
+    i = 500000000;
+    printf("%d\n", i);
+    i *= 8;
+    printf("%d\n", i);
+    i /= 8;
+    printf("%d\n", i);
+
     return 0;
 }
