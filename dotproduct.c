@@ -56,16 +56,13 @@ int main(int argc, char **argv) {
     start = MPI_Wtime();
   // Chop up vector and send chunks to processes (0 only).
     chunk_size = VectorLength / n_proc;
-    printf("chunk: %d\n", chunk_size);
 
     for (i = 1; i < n_proc; i++) {
       msg_len = chunk_size;
       if (i == n_proc-1) {
-        int rem = VectorLength % n_proc;
-        printf("remainder: %d\n", rem);
         msg_len += VectorLength % n_proc;
       }
-      printf("outgoing message len: %d\n", msg_len);
+      //printf("outgoing message len: %d\n", msg_len);
       MPI_Send(&vector[i*chunk_size], msg_len, MPI_DOUBLE,
             i, tag, MPI_COMM_WORLD);
       //printf("Process %d sent %d entries to Process %d.\n", rank, msg_len, i);
@@ -95,7 +92,7 @@ int main(int argc, char **argv) {
   } else {
     MPI_Probe(0, tag, MPI_COMM_WORLD, &status);
     MPI_Get_count(&status, MPI_DOUBLE, &msg_len);
-    printf("Process %d received vector of len %d.\n", rank, msg_len);
+    //printf("Process %d received vector of len %d.\n", rank, msg_len);
     if (NULL == (vector = (double*) malloc(sizeof(double) * msg_len))) {
       printf("malloc failed on process %d...", rank);
     };
