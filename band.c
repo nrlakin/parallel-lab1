@@ -5,10 +5,10 @@
 int main(int argc, char **argv) {
   int sz, myid, packet_size, i;
   int send_id = 0, rec_id = 1, tag = 1;
-  double ack;
+  double receive;
 
   // granularity of messages/sizes to send
-  int packet_step = 25000;
+  int iter = 25000;
   int max_size = 3500000;
   int runs = 5;
 
@@ -25,9 +25,9 @@ int main(int argc, char **argv) {
   }
 
   // for each message size of interest (number of packets)
-  for (packet_size = packet_step; packet_size <= max_size; packet_size+=packet_step) {
+  for (packet_size = iter; packet_size <= max_size; packet_size += iter) {
     // initialize space for message in memory
-    double *send = (double *)malloc(packet_size * sizeof(double));
+    double *send = (double *) malloc (packet_size * sizeof(double));
     if (myid == send_id) {
       // build message
       int j;
@@ -40,23 +40,23 @@ int main(int argc, char **argv) {
         send[0] = MPI_Wtime();
         MPI_Send(send, packet_size, MPI_DOUBLE, rec_id, tag, MPI_COMM_WORLD);
         // wait for ack to proceed
-        MPI_Recv(&ack, 1, MPI_DOUBLE, rec_id, tag, MPI_COMM_WORLD, &status);
+        MPI_Recv(&receive, 1, MPI_DOUBLE, rec_id, tag, MPI_COMM_WORLD, &status);
       }
       free(send);
     } else if (myid == rec_id) {
-      double total_bw = 0;
+      double total = 0;
       for (i = 0; i < runs; i++) {
         MPI_Recv(send, packet_size, MPI_DOUBLE, send_id, tag, MPI_COMM_WORLD, &status);
         double end = MPI_Wtime();
         // calculate receive time
         double bw = (sizeof(double) * packet_size) / (end - send[0]);
-        total_bw += bw;
-
+        total += bw;
+        // send ack as end time
         MPI_Send(&end, 1, MPI_DOUBLE, send_id, tag, MPI_COMM_WORLD);
       }
       // calculate average bandwidth
-      printf("Runs: %i, Packet Size: %.11i, Bandwidth: %.11f \n",
-       runs, packet_size, total_bw/runs);
+      printf("Runs: %i, Packet Size: %.11i, Average BW: %.11f \n",
+       runs, packet_size, total/runs);
       free(send);
     }
   }
